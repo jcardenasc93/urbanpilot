@@ -1,6 +1,6 @@
 """ Views implementation """
 
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 from .models import db, CustomerModel
 from .schema import CustomerSchema
 
@@ -28,3 +28,16 @@ def register_customer():
         return {"server_msg": "Invalid request", "error_msg": e.__str__()}, 400
     else:
         return customer_schema.jsonify(new_customer), 201
+
+
+@customer.route("", methods=["GET"])
+def get_customers():
+    customers = CustomerModel.query.all()
+    response = customers_schema.dump(customers)
+    return jsonify(response), 200
+
+
+@customer.route("/<customer_id>", methods=["GET"])
+def get_customer(customer_id):
+    customer = CustomerModel.query.get(customer_id)
+    return customer_schema.jsonify(customer), 200
