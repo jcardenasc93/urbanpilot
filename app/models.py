@@ -3,12 +3,15 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import validates
 
+import re
+
 # Instace db
 db = SQLAlchemy()
 
 
 class CustomerModel(db.Model):
     __tablename__ = "customer"
+    email_regex = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"
 
     _id = db.Column("id", db.Integer, primary_key=True)
     first_name = db.Column(db.String(20))
@@ -19,14 +22,24 @@ class CustomerModel(db.Model):
 
     @validates("email")
     def email_validation(self, key, value):
-        assert "@" in value
-        return value
+        self.not_empty_value(key, value)
+        if re.fullmatch(self.email_regex, value):
+            return value
+        raise ValueError("Invalid email")
 
     @validates("zipcode")
     def zipcode_validation(self, key, value):
-        assert value > 0
-        assert len(str(value)) == 5
-        return value
+        if value > 0 and len(str(value)) == 5:
+            return value
+        raise ValueError("Invalid zipcode")
+
+    @validates("first_name")
+    def firs_name_validation(self, key, value):
+        self.not_empty_value(key, value)
+
+    @validates("last_name")
+    def last_name_validation(self, key, value):
+        self.not_empty_value(key, value)
 
     def __init__(self, first_name, last_name, email, zipcode, middle_name=None):
         self.first_name = first_name
@@ -34,6 +47,11 @@ class CustomerModel(db.Model):
         self.last_name = last_name
         self.email = email
         self.zipcode = zipcode
+
+    @staticmethod
+    def not_empty_value(key, value):
+        if value == "":
+            raise ValueError(f"Not allowed empty values for {key}")
 
     def __repr__(self):
         # Overrides object representation
