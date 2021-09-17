@@ -36,10 +36,12 @@ class CustomerModel(db.Model):
     @validates("first_name")
     def firs_name_validation(self, key, value):
         self.not_empty_value(key, value)
+        return value
 
     @validates("last_name")
     def last_name_validation(self, key, value):
         self.not_empty_value(key, value)
+        return value
 
     def __init__(self, first_name, last_name, email, zipcode, middle_name=None):
         self.first_name = first_name
