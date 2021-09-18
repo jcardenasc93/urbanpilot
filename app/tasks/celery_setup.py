@@ -1,9 +1,12 @@
 """ Celery setup """
 
 from celery import Celery
+from app import create_app
 
 
-def make_celery(app):
+def make_celery(app=None):
+    # Creates app if not exists
+    app = app or create_app()
     celery = Celery(
         app.import_name,
         backend=app.config["CELERY_RESULT_URL"],

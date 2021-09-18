@@ -27,6 +27,10 @@ def register_customer():
     except Exception as e:
         return {"server_msg": "Invalid request", "error_msg": e.__str__()}, 400
     else:
+        current_app.celery.send_task(
+            "celery_tasks.search_for_location", args=[new_customer._id, zipcode]
+        )
+
         return customer_schema.jsonify(new_customer), 201
 
 
@@ -34,7 +38,6 @@ def register_customer():
 def get_customers():
     customers = CustomerModel.query.all()
     response = customers_schema.dump(customers)
-    current_app.celery.send_task("celery_tasks.search_for_location", args=[33])
     return jsonify(response), 200
 
 

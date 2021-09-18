@@ -2,7 +2,6 @@
 import os
 from flask import Flask
 from flask_migrate import Migrate
-from app.tasks.celery_setup import make_celery
 
 
 def create_app(test_config=None):
@@ -49,6 +48,7 @@ def create_app(test_config=None):
     app.config.update(
         CELERY_BROKER_URL=os.getenv("REDIS_URI"),
         CELERY_RESULT_URL=os.getenv("REDIS_URI"),
+        CELERY_IMPORTS=("app.tasks.location",),
     )
 
     @app.route("/alive")

@@ -1,9 +1,12 @@
 """ Realte zipcodes with real locations """
 import os
 import requests
-import time
 from celery import shared_task
+from app.util.utils import DictUtils
+from app.tasks.celery_setup import make_celery
 
+celery = make_celery()
+from app.models import db, CustomerModel
 
 class ZipCodeLocation:
     """Class defined to retrieve locations based on a zipcode"""
@@ -44,12 +47,24 @@ class ZipCodeLocation:
         """Retrieves location info from external source based on the zipcode"""
         request_url = self.SOURCE_URL.format(self.zipcode)
         response = requests.get(request_url)
-        time.sleep(5)
         return response
 
 
 @shared_task(name="celery_tasks.search_for_location")
-def search_for_location(zipcode: int):
+def search_for_location(customer_id: int, zipcode: int):
     zipcode_to_location = ZipCodeLocation(zipcode)
     response = zipcode_to_location.get_location_info()
-    print(response)
+    # If response status code is 200 then updates customer's info
+    if response:
+        response = response.json()
+        city = DictUtils.search_key("city", response)
+        state = DictUtils.search_key("state", response)
+        county = DictUtils.search_key("county", response)
+        try:
+            # with celery.app.app_context():
+            CustomerModel.query.filter_by(_id=customer_id).update(
+                dict(city=city, state=state, county=county)
+            )
+            db.session.commit()
+        except Exception as e:
+            print(e)

@@ -19,6 +19,9 @@ class CustomerModel(db.Model):
     last_name = db.Column(db.String(20))
     email = db.Column(db.String(50), unique=True)
     zipcode = db.Column(db.Integer)
+    city = db.Column(db.String(20), nullable=True)
+    county = db.Column(db.String(20), nullable=True)
+    state = db.Column(db.String(20), nullable=True)
 
     @validates("email")
     def email_validation(self, key, value):
