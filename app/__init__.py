@@ -2,6 +2,7 @@
 import os
 from flask import Flask
 from flask_migrate import Migrate
+from app.tasks.celery_setup import make_celery
 
 
 def create_app(test_config=None):
@@ -40,9 +41,15 @@ def create_app(test_config=None):
     ma.init_app(app)
 
     # Views initialization
-    from .customer import customer
+    from app.customer import customer
 
     app.register_blueprint(customer, url_prefix="/customer")
+
+    # Celery app configuration
+    app.config.update(
+        CELERY_BROKER_URL=os.getenv("REDIS_URI"),
+        CELERY_RESULT_URL=os.getenv("REDIS_URI"),
+    )
 
     @app.route("/alive")
     def app_status():
