@@ -27,9 +27,13 @@ def register_customer():
     except Exception as e:
         return {"server_msg": "Invalid request", "error_msg": e.__str__()}, 400
     else:
-        current_app.celery.send_task(
-            "celery_tasks.search_for_location", args=[new_customer._id, zipcode]
-        )
+        try:
+            if current_app.celery or False:
+                current_app.celery.send_task(
+                    "celery_tasks.search_for_location", args=[new_customer._id, zipcode]
+                )
+        except Exception:
+            pass
 
         return customer_schema.jsonify(new_customer), 201
 

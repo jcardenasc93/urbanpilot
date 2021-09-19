@@ -37,7 +37,7 @@ class ZipCodeLocation:
         def wrapper(self):
             response = func(self)
             if response.status_code == 200:
-                return response
+                return response.json()
             return None
 
         return wrapper
@@ -56,12 +56,10 @@ def search_for_location(customer_id: int, zipcode: int):
     response = zipcode_to_location.get_location_info()
     # If response status code is 200 then updates customer's info
     if response:
-        response = response.json()
         city = DictUtils.search_key("city", response)
         state = DictUtils.search_key("state", response)
         county = DictUtils.search_key("county", response)
         try:
-            # with celery.app.app_context():
             CustomerModel.query.filter_by(_id=customer_id).update(
                 dict(city=city, state=state, county=county)
             )
