@@ -23,3 +23,7 @@ htmlcov/
 .coverage
 .coverage.*
 *,cover
+
+# SQLite
+*.sqlite3
+*.db
