@@ -53,7 +53,12 @@ def create_app(test_config=None):
 
     # Register commands
     from app.util.analytics import analytics
+
     app.register_blueprint(analytics)
+
+    from app.util.gis import gis
+
+    app.register_blueprint(gis)
 
     @app.route("/alive")
     def app_status():

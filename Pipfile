@@ -17,6 +17,7 @@ requests = "*"
 pytest = "*"
 pytest-celery = "*"
 pytest-cov = "*"
+mpu = "*"
 
 [dev-packages]
 neovim = "*"
