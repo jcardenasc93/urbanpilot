@@ -51,6 +51,10 @@ def create_app(test_config=None):
         CELERY_IMPORTS=("app.tasks.location",),
     )
 
+    # Register commands
+    from app.util.analytics import analytics
+    app.register_blueprint(analytics)
+
     @app.route("/alive")
     def app_status():
         return {"status": "Server alive"}
