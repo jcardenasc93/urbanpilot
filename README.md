@@ -24,7 +24,7 @@ Please follow the next steps to run the Flask API in your local machine:
 {
     "first_name": "Jhon",
     "last_name": "Doe",
-    "middle_name": "Paul [Optional]"
+    "middle_name": "Paul [Optional]",
     "email": "jhon.doe@example.com",
     "zipcode": 94118
 }
