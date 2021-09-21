@@ -44,6 +44,10 @@ def create_app(test_config=None):
 
     app.register_blueprint(customer, url_prefix="/customer")
 
+    from app.locations import rank
+
+    app.register_blueprint(rank, url_prefix="/locations")
+
     # Celery app configuration
     app.config.update(
         CELERY_BROKER_URL=os.getenv("REDIS_URI"),
