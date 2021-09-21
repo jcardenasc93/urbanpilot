@@ -77,5 +77,6 @@ def celery_app():
     """Setup celery app for testing"""
     from run import celery
     from celery.contrib.testing import tasks
+    celery.include=["celery.ping"]
 
     return celery
